@@ -34,5 +34,10 @@ Oferecer uma ferramenta que:
 
 ---
 
-## 🚀 **Como rodar o projeto**
-1. Clone o repositório:
+## 👥 **Autores**
+- Yan Feitosa
+
+---
+
+## 💡 **Status**
+🔧 Em desenvolvimento (MVP)
