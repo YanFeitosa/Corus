@@ -44,41 +44,18 @@ Corus é um aplicativo web inteligente que transforma qualquer material de estud
 
 ---
 
-## 📂 **Estrutura do Projeto**
-
-/frontend # Interface do usuário
-/backend # APIs, lógica de negócio, integração IA/OCR
-/docs # Documentação, requisitos, diagramas UML
-/notebooks # Experimentação com prompts e OCR
-
----
-
-## 🔮 **Planejamento**
-
-- [x] Brainstorming e definição de conceito
-- [x] Análise de viabilidade técnica e custos
-- [x] Modelagem UML inicial (casos de uso, fluxos)
-- [ ] Especificação completa de requisitos
-- [ ] Protótipo de UI
-- [ ] MVP funcional
-
----
-
-## 👥 **Autor**
+## 👥 **Autores**
 
 - **Yan Feitosa**
+- **Ruanderson Gabriel**
+- **Felipe Apolinário**
+- **Dmitri Verdi**
+- **Pedro Henrique Nogueira**
+
 
 ---
 
 ## 💡 **Status**
 
 📌 **Em desenvolvimento** (fase inicial de definição e arquitetura).
-
----
-
-## 📝 **Licença**
-
-Este projeto está licenciado sob a [MIT License](LICENSE).
-
----
 
