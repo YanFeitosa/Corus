@@ -1,7 +1,8 @@
 package controle;
 
 import entidade.Usuario;
-import repositorio.UsuarioRepositorio;
+import infra.UsuarioRepositorio;
+
 import java.util.List;
 
 public class GerenciamentoUsuario {
@@ -11,12 +12,12 @@ public class GerenciamentoUsuario {
         this.repositorio = repositorio;
     }
 
-    public void adicionarUsuario(String login, String senha) {
+    public void adicionarUsuario(String login, String senha) throws Exception {
         Usuario novo = new Usuario(login, senha);
-        repositorio.salvar(novo);
+        repositorio.adicionar(novo);
     }
 
-    public List<Usuario> listarUsuarios() {
-        return repositorio.buscarTodos();
+    public List<Usuario> listarUsuarios() throws Exception {
+        return repositorio.listar();
     }
 }

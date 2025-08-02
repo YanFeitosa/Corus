@@ -39,23 +39,59 @@ public class AdminUI {
         }
     }
 
+    // private void adicionarUsuario() {
+    //     System.out.print("Login: ");
+    //     String login = scanner.nextLine();
+    //     System.out.print("Senha: ");
+    //     String senha = scanner.nextLine();
+    //     controlador.adicionarUsuario(login, senha);
+    //     System.out.println("Usuário adicionado.");
+    // }
+
+    // private void listarUsuarios() {
+    //     List<Usuario> usuarios = controlador.listarUsuarios();
+    //     System.out.println("\n--- Lista de Usuários ---");
+    //     for (Usuario u : usuarios) {
+    //         System.out.println(u);
+    //     }
+    //     if (usuarios.isEmpty()) {
+    //         System.out.println("(Nenhum usuário cadastrado)");
+    //     }
+    // }
+
+
     private void adicionarUsuario() {
         System.out.print("Login: ");
         String login = scanner.nextLine();
         System.out.print("Senha: ");
         String senha = scanner.nextLine();
-        controlador.adicionarUsuario(login, senha);
-        System.out.println("Usuário adicionado.");
+
+        try {
+            controlador.adicionarUsuario(login, senha);
+            System.out.println("Usuário adicionado.");
+        } catch (Exception e) {
+            System.out.println("Erro ao adicionar usuário: " + e.getMessage());
+        }
     }
 
+    
     private void listarUsuarios() {
+    try {
         List<Usuario> usuarios = controlador.listarUsuarios();
         System.out.println("\n--- Lista de Usuários ---");
-        for (Usuario u : usuarios) {
-            System.out.println(u);
-        }
         if (usuarios.isEmpty()) {
             System.out.println("(Nenhum usuário cadastrado)");
+        } else {
+            for (Usuario u : usuarios) {
+                System.out.println(u);
+            }
         }
+    } catch (Exception e) {
+        System.out.println("Erro ao listar usuários: " + e.getMessage());
     }
+    }
+
 }
+
+
+
