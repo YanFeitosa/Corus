@@ -19,6 +19,6 @@ public class Usuario {
 
     @Override
     public String toString() {
-        return "Login: " + login;
+        return "Usuario{" + "login='" + login + '\'' + ", senha='" + senha + '\'' + '}';
     }
 }
