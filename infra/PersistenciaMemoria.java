@@ -1,30 +1,26 @@
 package infra;
 
 import entidade.Usuario;
-// import utils.ExcecoesRepositorio;
-import infra.UsuarioRepositorio;
-
 import java.util.ArrayList;
 import java.util.List;
+import utils.ExcecoesRepositorio;
 
 public class PersistenciaMemoria implements UsuarioRepositorio {
     private List<Usuario> usuarios = new ArrayList<>();
 
     @Override
-    public void adicionar(Usuario usuario) throws Exception {
+    public void adicionar(Usuario usuario) throws ExcecoesRepositorio {
         if (buscar(usuario.getLogin()) != null) {
-            // throw new ExcecoesRepositorio("Usuário já existe na memória.");
-            System.out.println("Usuário já existe na memória.");
+            throw new ExcecoesRepositorio("Usuário já existe");
         }
         usuarios.add(usuario);
     }
 
     @Override
-    public void remover(String login) throws Exception {
+    public void remover(String login) throws ExcecoesRepositorio {
         Usuario u = buscar(login);
         if (u == null) {
-            System.out.println("Usuário não encontrado para remoção.");
-            // throw new ExcecoesRepositorio("Usuário não encontrado para remoção.");
+            throw new ExcecoesRepositorio("Usuário não encontrado para remoção");
         }
         usuarios.remove(u);
     }
@@ -40,7 +36,7 @@ public class PersistenciaMemoria implements UsuarioRepositorio {
     }
 
     @Override
-    public List<Usuario> listar() throws Exception {
+    public List<Usuario> listar() {
         return new ArrayList<>(usuarios);
     }
 }

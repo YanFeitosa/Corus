@@ -3,7 +3,6 @@ package teste;
 import entidade.Usuario;
 import infra.PersistenciaArquivo;
 import infra.PersistenciaMemoria;
-
 import java.util.List;
 
 public class TestePersistencia {
