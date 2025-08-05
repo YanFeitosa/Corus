@@ -42,7 +42,7 @@ public class AdminUI {
         }
     }
 
-    private void adicionarUsuario() {
+     private void adicionarUsuario() {
         System.out.println("\n--- Novo Usuário ---");
         System.out.print("Login: ");
         String login = scanner.nextLine();
@@ -62,6 +62,7 @@ public class AdminUI {
             System.out.println("- Letra maiúscula e minúscula");
             System.out.println("- Número e caractere especial");
             System.out.println("- Não pode ser igual ao login");
+            System.out.println("- Sem espaços em branco");
         } catch (ExcecoesRepositorio e) {
             System.out.println("Erro no sistema: " + e.getMessage());
         } catch (Exception e) {
@@ -69,7 +70,7 @@ public class AdminUI {
         }
     }
 
- private void listarUsuarios() {
+    private void listarUsuarios() {
         try {
             List<Usuario> usuarios = controlador.listarUsuarios();
             System.out.println("\n--- Lista Completa de Usuários ---");
