@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import utils.ExcecoesRepositorio;
 
-public class PersistenciaArquivo implements UsuarioRepositorio {
+public class PersistenciaArquivoUsu implements UsuarioRepositorio {
     private final String caminhoArquivo = "usuarios.txt";
 
     @Override

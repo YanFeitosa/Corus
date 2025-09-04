@@ -1,8 +1,8 @@
 package teste;
 
 import entidade.Usuario;
-import infra.PersistenciaArquivo;
-import infra.PersistenciaMemoria;
+import infra.PersistenciaArquivoUsu;
+import infra.PersistenciaMemoriaUsu;
 import java.util.List;
 
 public class TestePersistencia {
@@ -10,7 +10,7 @@ public class TestePersistencia {
     public void testePersistenciaArquivo() {
         try {
             System.out.println("\n-- Testando Persistência em Arquivo --");
-            PersistenciaArquivo repoArquivo = new PersistenciaArquivo();
+            PersistenciaArquivoUsu repoArquivo = new PersistenciaArquivoUsu();
 
             // Limpar arquivo
             List<Usuario> usuariosAntes = repoArquivo.listar();
@@ -50,7 +50,7 @@ public class TestePersistencia {
     public void testePersistenciaMemoria() {
         try {
             System.out.println("\n-- Testando Persistência em Memória --");
-            PersistenciaMemoria repoMemoria = new PersistenciaMemoria();
+            PersistenciaMemoriaUsu repoMemoria = new PersistenciaMemoriaUsu();
 
             Usuario u1 = new Usuario("ruan", "senha123");
             Usuario u2 = new Usuario("ana", "senha456");

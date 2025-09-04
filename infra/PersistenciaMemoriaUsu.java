@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import utils.ExcecoesRepositorio;
 
-public class PersistenciaMemoria implements UsuarioRepositorio {
+public class PersistenciaMemoriaUsu implements UsuarioRepositorio {
     private List<Usuario> usuarios = new ArrayList<>();
 
     @Override

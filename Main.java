@@ -1,32 +1,40 @@
-    import controle.GerenciamentoUsuario;
-    import infra.PersistenciaArquivo;
-    import infra.PersistenciaMemoria;
-    import infra.UsuarioRepositorio;
-    import java.util.Scanner;
-    import ui.AdminUI;
+import controle.GerenciamentoDocumento;
+import controle.GerenciamentoUsuario;
+import infra.DocumentoRepositorio;
+import infra.PersistenciaArquivoUsu;
+import infra.PersistenciaMemoriaDoc;
+import infra.PersistenciaMemoriaUsu;
+import infra.UsuarioRepositorio;
+import java.util.Scanner;
+import ui.AdminUI;
 
-    public class Main {
-        public static void main(String[] args) {
-            Scanner scanner = new Scanner(System.in);
-            
-            System.out.println("Escolha o tipo de persistência:");
-            System.out.println("1 - Memória");
-            System.out.println("2 - Arquivo");
-            System.out.print("Opção: ");
-            int opcao = scanner.nextInt();
-            scanner.nextLine(); // Limpar buffer
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        
+        System.out.println("Escolha o tipo de persistência para Usuário:");
+        System.out.println("1 - Memória");
+        System.out.println("2 - Arquivo");
+        System.out.print("Opção: ");
+        int opcao = scanner.nextInt();
+        scanner.nextLine(); // Limpar buffer
 
-            UsuarioRepositorio repositorio;
-            if (opcao == 2) {
-                repositorio = new PersistenciaArquivo();
-                System.out.println("Persistência em arquivo selecionada.");
-            } else {
-                repositorio = new PersistenciaMemoria();
-                System.out.println("Persistência em memória selecionada.");
-            }
-
-            GerenciamentoUsuario controlador = new GerenciamentoUsuario(repositorio);
-            AdminUI ui = new AdminUI(controlador);
-            ui.iniciar();
+        UsuarioRepositorio usuarioRepositorio;
+        if (opcao == 2) {
+            usuarioRepositorio = new PersistenciaArquivoUsu();
+            System.out.println("Persistência em arquivo selecionada.");
+        } else {
+            usuarioRepositorio = new PersistenciaMemoriaUsu();
+            System.out.println("Persistência em memória selecionada.");
         }
+
+        // Inicializar repositório de documentos
+        DocumentoRepositorio documentoRepositorio = new PersistenciaMemoriaDoc();
+
+        GerenciamentoUsuario controladorUsuario = new GerenciamentoUsuario(usuarioRepositorio);
+        GerenciamentoDocumento controladorDocumento = new GerenciamentoDocumento(documentoRepositorio, usuarioRepositorio);
+
+        AdminUI ui = new AdminUI(controladorUsuario, controladorDocumento);
+        ui.iniciar();
     }
+}
