@@ -1,5 +1,6 @@
 import controle.GerenciamentoDocumento;
 import controle.GerenciamentoUsuario;
+import controle.SistemaFacade;
 import infra.DocumentoRepositorio;
 import infra.PersistenciaArquivoUsu;
 import infra.PersistenciaMemoriaDoc;
@@ -7,7 +8,6 @@ import infra.PersistenciaMemoriaUsu;
 import infra.UsuarioRepositorio;
 import java.util.Scanner;
 import ui.AdminUI;
-
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -31,10 +31,15 @@ public class Main {
         // Inicializar repositório de documentos
         DocumentoRepositorio documentoRepositorio = new PersistenciaMemoriaDoc();
 
-        GerenciamentoUsuario controladorUsuario = new GerenciamentoUsuario(usuarioRepositorio);
-        GerenciamentoDocumento controladorDocumento = new GerenciamentoDocumento(documentoRepositorio, usuarioRepositorio);
+        
+        // Criar a facade passando os repositórios
+        SistemaFacade sistema = new SistemaFacade(usuarioRepositorio, documentoRepositorio);
+        // --------------------- sem facade ---------------------------
+        // GerenciamentoUsuario controladorUsuario = new GerenciamentoUsuario(usuarioRepositorio);
+        // GerenciamentoDocumento controladorDocumento = new GerenciamentoDocumento(documentoRepositorio, usuarioRepositorio);
 
-        AdminUI ui = new AdminUI(controladorUsuario, controladorDocumento);
+        // AdminUI ui = new AdminUI(controladorUsuario, controladorDocumento);
+        AdminUI ui = new AdminUI(sistema);
         ui.iniciar();
     }
 }

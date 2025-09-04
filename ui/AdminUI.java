@@ -2,6 +2,7 @@ package ui;
 
 import controle.GerenciamentoDocumento;
 import controle.GerenciamentoUsuario;
+import controle.SistemaFacade;
 import entidade.Documento;
 import entidade.Usuario;
 import java.util.List;
@@ -11,15 +12,25 @@ import utils.ExcecoesRepositorio;
 import utils.ExcecoesSenha;
 
 public class AdminUI {
-    private GerenciamentoUsuario controladorUsuario;
-    private GerenciamentoDocumento controladorDocumento;
-    private Scanner scanner;
+     private SistemaFacade sistema;
+     private Scanner scanner;
 
-    public AdminUI(GerenciamentoUsuario controladorUsuario, GerenciamentoDocumento controladorDocumento) {
-        this.controladorUsuario = controladorUsuario;
-        this.controladorDocumento = controladorDocumento;
+    public AdminUI(SistemaFacade sistema) {
+        this.sistema = sistema;
         this.scanner = new Scanner(System.in);
     }
+// -------------------- SEM FACADE ---------------------------
+    // private GerenciamentoUsuario controladorUsuario;
+    // private GerenciamentoDocumento controladorDocumento;
+
+    // public AdminUI(GerenciamentoUsuario controladorUsuario, GerenciamentoDocumento controladorDocumento) {
+    //     this.controladorUsuario = controladorUsuario;
+    //     this.controladorDocumento = controladorDocumento;
+    //     this.scanner = new Scanner(System.in);
+    // }
+
+    // O resto do codigo foi alterado para acessar sistema em vez de controladorUsuario e controladorDocumento
+// ----------------------------------------------------------
 
     public void iniciar() {
         while (true) {
@@ -102,7 +113,7 @@ public class AdminUI {
         String senha = scanner.nextLine();
 
         try {
-            controladorUsuario.adicionarUsuario(login, senha);
+            sistema.cadastrarUsuario(login, senha);
             System.out.println("Usuário adicionado com sucesso!");
         } catch (ExcecoesLogin e) {
             System.out.println("Erro no login: " + e.getMessage());
@@ -124,7 +135,7 @@ public class AdminUI {
 
     private void listarUsuarios() {
         try {
-            List<Usuario> usuarios = controladorUsuario.listarUsuarios();
+            List<Usuario> usuarios = sistema.listarUsuarios();
             System.out.println("\n--- Lista Completa de Usuários ---");
             if (usuarios.isEmpty()) {
                 System.out.println("Nenhum usuário cadastrado");
@@ -150,7 +161,7 @@ public class AdminUI {
         
         // Listar usuários disponíveis
         try {
-            List<Usuario> usuarios = controladorUsuario.listarUsuarios();
+            List<Usuario> usuarios = sistema.listarUsuarios();
             if (usuarios.isEmpty()) {
                 System.out.println("Nenhum usuário cadastrado. É necessário cadastrar um usuário primeiro.");
                 return;
@@ -176,7 +187,7 @@ public class AdminUI {
         String usuarioAssociado = scanner.nextLine();
 
         try {
-            controladorDocumento.adicionarDocumento(nome, tamanho, usuarioAssociado);
+            sistema.cadastrarDocumento(nome, tamanho, usuarioAssociado);
             System.out.println("Documento adicionado com sucesso!");
         } catch (ExcecoesRepositorio e) {
             System.out.println("Erro: " + e.getMessage());
@@ -185,7 +196,7 @@ public class AdminUI {
 
     private void listarDocumentos() {
         try {
-            List<Documento> documentos = controladorDocumento.listarDocumentos();
+            List<Documento> documentos = sistema.listarDocumentos();
             System.out.println("\n--- Lista de Documentos ---");
             if (documentos.isEmpty()) {
                 System.out.println("Nenhum documento cadastrado");
