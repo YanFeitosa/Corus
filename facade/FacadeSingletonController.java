@@ -12,12 +12,36 @@ import utils.ExcecoesRepositorio;
 import utils.ExcecoesSenha;
 
 public class FacadeSingletonController {
+    // Instância única do Singleton
+    private static FacadeSingletonController instance;
+
+    //Controladores
     private GerenciamentoUsuario gerenciamentoUsuario;
     private GerenciamentoDocumento gerenciamentoDocumento;
 
-    public FacadeSingletonController(UsuarioRepositorio usuarioRepositorio, DocumentoRepositorio documentoRepositorio) {
+    // Construtor privado para impedir instanciação externa
+    private FacadeSingletonController(UsuarioRepositorio usuarioRepositorio, 
+                                     DocumentoRepositorio documentoRepositorio) {
         this.gerenciamentoUsuario = new GerenciamentoUsuario(usuarioRepositorio);
         this.gerenciamentoDocumento = new GerenciamentoDocumento(documentoRepositorio, usuarioRepositorio);
+    }
+
+    // Método para obter a instância única (Singleton)
+    public static synchronized FacadeSingletonController getInstance(UsuarioRepositorio usuarioRepositorio, 
+                                                                   DocumentoRepositorio documentoRepositorio) {
+        if (instance == null) {
+            instance = new FacadeSingletonController(usuarioRepositorio, documentoRepositorio);
+        }
+        return instance;
+    }
+    
+    // Método para obter a instância sem parâmetros (após inicialização)
+    public static synchronized FacadeSingletonController getInstance() {
+        if (instance == null) {
+            throw new IllegalStateException("FacadeSingletonController não foi inicializado. "
+                                         + "Use getInstance(UsuarioRepositorio, DocumentoRepositorio) primeiro.");
+        }
+        return instance;
     }
 
     // ---- Métodos relacionados a usuário ----
@@ -30,6 +54,10 @@ public class FacadeSingletonController {
         return gerenciamentoUsuario.listarUsuarios();
     }
 
+    public Usuario buscarUsuario(String login) throws ExcecoesRepositorio {
+        return gerenciamentoUsuario.buscarUsuario(login);
+    }
+
     // ---- Métodos relacionados a documentos ----
     public void cadastrarDocumento(String nome, int tamanho, String usuarioAssociado) 
             throws ExcecoesRepositorio {
@@ -38,5 +66,30 @@ public class FacadeSingletonController {
 
     public List<Documento> listarDocumentos() throws ExcecoesRepositorio {
         return gerenciamentoDocumento.listarDocumentos();
+    }
+
+    // Método para obter a quantidade total de entidades cadastradas
+    public int getQuantidadeEntidades() throws ExcecoesRepositorio {
+        int quantidadeUsuarios = gerenciamentoUsuario.listarUsuarios().size();
+        int quantidadeDocumentos = gerenciamentoDocumento.listarDocumentos().size();
+        return quantidadeUsuarios + quantidadeDocumentos;
+    }
+
+    // Método para obter estatísticas detalhadas
+    public String getEstatisticas() throws ExcecoesRepositorio {
+        int quantidadeUsuarios = gerenciamentoUsuario.listarUsuarios().size();
+        int quantidadeDocumentos = gerenciamentoDocumento.listarDocumentos().size();
+        
+        return String.format("Estatísticas do Sistema:%n" +
+                           "- Usuários cadastrados: %d%n" +
+                           "- Documentos cadastrados: %d%n" +
+                           "- Total de entidades: %d", 
+                           quantidadeUsuarios, quantidadeDocumentos, 
+                           quantidadeUsuarios + quantidadeDocumentos);
+    }
+
+    // Método para resetar a instância (útil para testes)
+    public static synchronized void resetInstance() {
+        instance = null;
     }
 }

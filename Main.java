@@ -6,6 +6,7 @@ import infra.PersistenciaMemoriaUsu;
 import infra.UsuarioRepositorio;
 import java.util.Scanner;
 import ui.AdminUI;
+
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -29,15 +30,17 @@ public class Main {
         // Inicializar repositório de documentos
         DocumentoRepositorio documentoRepositorio = new PersistenciaMemoriaDoc();
 
-        
         // Criar a facade passando os repositórios
-        FacadeSingletonController sistema = new FacadeSingletonController(usuarioRepositorio, documentoRepositorio);
+         // Inicializar a fachada singleton
+        FacadeSingletonController facade = FacadeSingletonController.getInstance(
+            usuarioRepositorio, documentoRepositorio
+        );
         // --------------------- sem facade ---------------------------
         // GerenciamentoUsuario controladorUsuario = new GerenciamentoUsuario(usuarioRepositorio);
         // GerenciamentoDocumento controladorDocumento = new GerenciamentoDocumento(documentoRepositorio, usuarioRepositorio);
 
         // AdminUI ui = new AdminUI(controladorUsuario, controladorDocumento);
-        AdminUI ui = new AdminUI(sistema);
+        AdminUI ui = new AdminUI(facade);
         ui.iniciar();
     }
 }

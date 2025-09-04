@@ -27,4 +27,8 @@ public class GerenciamentoUsuario {
     public List<Usuario> listarUsuarios() throws ExcecoesRepositorio {
         return repositorio.listar();
     }
+
+    public Usuario buscarUsuario(String login) throws ExcecoesRepositorio {
+        return repositorio.buscar(login);
+    }
 }

@@ -10,11 +10,11 @@ import utils.ExcecoesRepositorio;
 import utils.ExcecoesSenha;
 
 public class AdminUI {
-     private FacadeSingletonController sistema;
+     private FacadeSingletonController facade;
      private Scanner scanner;
 
-    public AdminUI(FacadeSingletonController sistema) {
-        this.sistema = sistema;
+    public AdminUI(FacadeSingletonController facade) {
+        this.facade = facade;
         this.scanner = new Scanner(System.in);
     }
 // -------------------- SEM FACADE ---------------------------
@@ -27,7 +27,7 @@ public class AdminUI {
     //     this.scanner = new Scanner(System.in);
     // }
 
-    // O resto do codigo foi alterado para acessar sistema em vez de controladorUsuario e controladorDocumento
+    // O resto do codigo foi alterado para acessar facade em vez de controladorUsuario e controladorDocumento
 // ----------------------------------------------------------
 
     public void iniciar() {
@@ -35,6 +35,7 @@ public class AdminUI {
             System.out.println("\n===== Menu Principal =====");
             System.out.println("1 - Gerenciar usuários");
             System.out.println("2 - Gerenciar documentos");
+            System.out.println("3 - Estatísticas do sistema");
             System.out.println("0 - Sair");
             System.out.print("Escolha: ");
             String opcao = scanner.nextLine();
@@ -46,12 +47,23 @@ public class AdminUI {
                 case "2":
                     gerenciarDocumentos();
                     break;
+                case "3":
+                    mostrarEstatisticas();
+                    break;
                 case "0":
                     System.out.println("Encerrando...");
                     return;
                 default:
                     System.out.println("Opção inválida.");
             }
+        }
+    }
+
+    private void mostrarEstatisticas() {
+        try {
+            System.out.println("\n" + facade.getEstatisticas());
+        } catch (Exception e) {
+            System.out.println("Erro ao obter estatísticas: " + e.getMessage());
         }
     }
 
@@ -103,7 +115,7 @@ public class AdminUI {
         }
     }
 
-     private void adicionarUsuario() {
+    private void adicionarUsuario() {
         System.out.println("\n--- Novo Usuário ---");
         System.out.print("Login: ");
         String login = scanner.nextLine();
@@ -111,7 +123,7 @@ public class AdminUI {
         String senha = scanner.nextLine();
 
         try {
-            sistema.cadastrarUsuario(login, senha);
+            facade.cadastrarUsuario(login, senha);
             System.out.println("Usuário adicionado com sucesso!");
         } catch (ExcecoesLogin e) {
             System.out.println("Erro no login: " + e.getMessage());
@@ -133,7 +145,7 @@ public class AdminUI {
 
     private void listarUsuarios() {
         try {
-            List<Usuario> usuarios = sistema.listarUsuarios();
+            List<Usuario> usuarios = facade.listarUsuarios();
             System.out.println("\n--- Lista Completa de Usuários ---");
             if (usuarios.isEmpty()) {
                 System.out.println("Nenhum usuário cadastrado");
@@ -159,7 +171,7 @@ public class AdminUI {
         
         // Listar usuários disponíveis
         try {
-            List<Usuario> usuarios = sistema.listarUsuarios();
+            List<Usuario> usuarios = facade.listarUsuarios();
             if (usuarios.isEmpty()) {
                 System.out.println("Nenhum usuário cadastrado. É necessário cadastrar um usuário primeiro.");
                 return;
@@ -185,7 +197,7 @@ public class AdminUI {
         String usuarioAssociado = scanner.nextLine();
 
         try {
-            sistema.cadastrarDocumento(nome, tamanho, usuarioAssociado);
+            facade.cadastrarDocumento(nome, tamanho, usuarioAssociado);
             System.out.println("Documento adicionado com sucesso!");
         } catch (ExcecoesRepositorio e) {
             System.out.println("Erro: " + e.getMessage());
@@ -194,7 +206,7 @@ public class AdminUI {
 
     private void listarDocumentos() {
         try {
-            List<Documento> documentos = sistema.listarDocumentos();
+            List<Documento> documentos = facade.listarDocumentos();
             System.out.println("\n--- Lista de Documentos ---");
             if (documentos.isEmpty()) {
                 System.out.println("Nenhum documento cadastrado");
