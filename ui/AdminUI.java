@@ -1,10 +1,8 @@
 package ui;
 
-import controle.GerenciamentoDocumento;
-import controle.GerenciamentoUsuario;
-import controle.SistemaFacade;
 import entidade.Documento;
 import entidade.Usuario;
+import facade.FacadeSingletonController;
 import java.util.List;
 import java.util.Scanner;
 import utils.ExcecoesLogin;
@@ -12,10 +10,10 @@ import utils.ExcecoesRepositorio;
 import utils.ExcecoesSenha;
 
 public class AdminUI {
-     private SistemaFacade sistema;
+     private FacadeSingletonController sistema;
      private Scanner scanner;
 
-    public AdminUI(SistemaFacade sistema) {
+    public AdminUI(FacadeSingletonController sistema) {
         this.sistema = sistema;
         this.scanner = new Scanner(System.in);
     }

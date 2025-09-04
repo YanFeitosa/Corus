@@ -1,6 +1,4 @@
-import controle.GerenciamentoDocumento;
-import controle.GerenciamentoUsuario;
-import controle.SistemaFacade;
+import facade.FacadeSingletonController;
 import infra.DocumentoRepositorio;
 import infra.PersistenciaArquivoUsu;
 import infra.PersistenciaMemoriaDoc;
@@ -33,7 +31,7 @@ public class Main {
 
         
         // Criar a facade passando os repositórios
-        SistemaFacade sistema = new SistemaFacade(usuarioRepositorio, documentoRepositorio);
+        FacadeSingletonController sistema = new FacadeSingletonController(usuarioRepositorio, documentoRepositorio);
         // --------------------- sem facade ---------------------------
         // GerenciamentoUsuario controladorUsuario = new GerenciamentoUsuario(usuarioRepositorio);
         // GerenciamentoDocumento controladorDocumento = new GerenciamentoDocumento(documentoRepositorio, usuarioRepositorio);

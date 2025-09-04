@@ -1,20 +1,21 @@
-package controle;
+package facade;
 
-import entidade.Usuario;
+import controle.GerenciamentoDocumento;
+import controle.GerenciamentoUsuario;
 import entidade.Documento;
-import infra.UsuarioRepositorio;
+import entidade.Usuario;
 import infra.DocumentoRepositorio;
+import infra.UsuarioRepositorio;
+import java.util.List;
 import utils.ExcecoesLogin;
 import utils.ExcecoesRepositorio;
 import utils.ExcecoesSenha;
 
-import java.util.List;
-
-public class SistemaFacade {
+public class FacadeSingletonController {
     private GerenciamentoUsuario gerenciamentoUsuario;
     private GerenciamentoDocumento gerenciamentoDocumento;
 
-    public SistemaFacade(UsuarioRepositorio usuarioRepositorio, DocumentoRepositorio documentoRepositorio) {
+    public FacadeSingletonController(UsuarioRepositorio usuarioRepositorio, DocumentoRepositorio documentoRepositorio) {
         this.gerenciamentoUsuario = new GerenciamentoUsuario(usuarioRepositorio);
         this.gerenciamentoDocumento = new GerenciamentoDocumento(documentoRepositorio, usuarioRepositorio);
     }
