@@ -31,7 +31,7 @@ public class Main {
         DocumentoRepositorio documentoRepositorio = new PersistenciaMemoriaDoc();
 
         // Criar a facade passando os repositórios
-         // Inicializar a fachada singleton
+        // Inicializar a fachada singleton
         FacadeSingletonController facade = FacadeSingletonController.getInstance(
             usuarioRepositorio, documentoRepositorio
         );
