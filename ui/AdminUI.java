@@ -13,30 +13,18 @@ public class AdminUI {
      private FacadeSingletonController facade;
      private Scanner scanner;
 
-    public AdminUI(FacadeSingletonController facade) {
+    public AdminUI(FacadeSingletonController facade, Scanner scanner) {
         this.facade = facade;
-        this.scanner = new Scanner(System.in);
+        this.scanner = scanner;
     }
-// -------------------- SEM FACADE ---------------------------
-    // private GerenciamentoUsuario controladorUsuario;
-    // private GerenciamentoDocumento controladorDocumento;
-
-    // public AdminUI(GerenciamentoUsuario controladorUsuario, GerenciamentoDocumento controladorDocumento) {
-    //     this.controladorUsuario = controladorUsuario;
-    //     this.controladorDocumento = controladorDocumento;
-    //     this.scanner = new Scanner(System.in);
-    // }
-
-    // O resto do codigo foi alterado para acessar facade em vez de controladorUsuario e controladorDocumento
-// ----------------------------------------------------------
 
     public void iniciar() {
-        while (true) {
-            System.out.println("\n===== Menu Principal =====");
+         while (true) {
+            System.out.println("\n===== Menu Principal (Admin) =====");
             System.out.println("1 - Gerenciar usuários");
             System.out.println("2 - Gerenciar documentos");
             System.out.println("3 - Estatísticas do sistema");
-            System.out.println("0 - Sair");
+            System.out.println("4 - Logout");
             System.out.print("Escolha: ");
             String opcao = scanner.nextLine();
 
@@ -50,8 +38,8 @@ public class AdminUI {
                 case "3":
                     mostrarEstatisticas();
                     break;
-                case "0":
-                    System.out.println("Encerrando...");
+                case "4":
+                    System.out.println("Logout realizado com sucesso.");
                     return;
                 default:
                     System.out.println("Opção inválida.");

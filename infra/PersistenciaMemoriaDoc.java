@@ -1,10 +1,9 @@
 package infra;
 
 import entidade.Documento;
-import utils.ExcecoesRepositorio;
-
 import java.util.ArrayList;
 import java.util.List;
+import utils.ExcecoesRepositorio;
 
 public class PersistenciaMemoriaDoc implements DocumentoRepositorio {
     private List<Documento> documentos = new ArrayList<>();
@@ -15,6 +14,15 @@ public class PersistenciaMemoriaDoc implements DocumentoRepositorio {
             throw new ExcecoesRepositorio("Documento com este nome já existe");
         }
         documentos.add(documento);
+    }
+
+    @Override
+    public void remover(String nome) throws ExcecoesRepositorio {
+        Documento documento = buscarPorNome(nome);
+        if (documento == null) {
+            throw new ExcecoesRepositorio("Documento não encontrado para remoção");
+        }
+        documentos.remove(documento);
     }
 
     @Override

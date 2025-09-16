@@ -6,6 +6,7 @@ import infra.PersistenciaMemoriaUsu;
 import infra.UsuarioRepositorio;
 import java.util.Scanner;
 import ui.AdminUI;
+import ui.UserUI;
 
 public class Main {
     public static void main(String[] args) {
@@ -35,12 +36,58 @@ public class Main {
         FacadeSingletonController facade = FacadeSingletonController.getInstance(
             usuarioRepositorio, documentoRepositorio
         );
-        // --------------------- sem facade ---------------------------
-        // GerenciamentoUsuario controladorUsuario = new GerenciamentoUsuario(usuarioRepositorio);
-        // GerenciamentoDocumento controladorDocumento = new GerenciamentoDocumento(documentoRepositorio, usuarioRepositorio);
 
-        // AdminUI ui = new AdminUI(controladorUsuario, controladorDocumento);
-        AdminUI ui = new AdminUI(facade);
-        ui.iniciar();
+        telaLogin(facade, scanner);
+    }
+
+    private static void telaLogin(FacadeSingletonController fachada, Scanner scanner) {
+        while (true) {
+            System.out.println("\n===== Sistema de Login =====");
+            System.out.println("1 - Entrar");
+            System.out.println("0 - Sair do programa");
+            System.out.print("Opção: ");
+            String opcao = scanner.nextLine();
+
+            switch (opcao) {
+                case "1":
+                    realizarLogin(fachada, scanner);
+                    break;
+                case "0":
+                    System.out.println("Encerrando programa...");
+                    return;
+                default:
+                    System.out.println("Opção inválida.");
+            }
+        }
+    }
+
+    private static void realizarLogin(FacadeSingletonController fachada, Scanner scanner) {
+        System.out.println("\n--- Login ---");
+        System.out.print("Usuário: ");
+        String usuario = scanner.nextLine();
+        System.out.print("Senha: ");
+        String senha = scanner.nextLine();
+        
+        try {
+            if (usuario.equals("admin") && senha.equals("admin")) {
+                // Login como admin
+                System.out.println("Login realizado como administrador.");
+                AdminUI adminUI = new AdminUI(fachada, scanner);
+                adminUI.iniciar();
+            } else {
+                // Verificar se é um usuário cadastrado
+                if (fachada.verificarUsuario(usuario, senha)) {
+                    System.out.println("Login realizado com sucesso.");
+                    UserUI userUI = new UserUI(fachada, scanner, usuario);
+                    userUI.iniciar();
+                } else {
+                    System.out.println("Usuário ou senha inválidos.");
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Erro durante o login: " + e.getMessage());
+        }
     }
 }
+
+

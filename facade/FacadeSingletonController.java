@@ -64,8 +64,27 @@ public class FacadeSingletonController {
         gerenciamentoDocumento.adicionarDocumento(nome, tamanho, usuarioAssociado);
     }
 
+    public void removerDocumento(String nome) throws ExcecoesRepositorio {
+        gerenciamentoDocumento.removerDocumento(nome);
+    }
+
     public List<Documento> listarDocumentos() throws ExcecoesRepositorio {
         return gerenciamentoDocumento.listarDocumentos();
+    }
+
+    public Documento buscarDocumentoPorNome(String nome) throws ExcecoesRepositorio {
+        return gerenciamentoDocumento.buscarDocumentoPorNome(nome);
+    }
+
+    public boolean verificarUsuario(String login, String senha) throws ExcecoesRepositorio {
+        // Verificar se é admin
+        if (login.equals("admin") && senha.equals("admin")) {
+            return true;
+        }
+        
+        // Verificar se é um usuário cadastrado
+        Usuario usuario = buscarUsuario(login);
+        return usuario != null && usuario.getSenha().equals(senha);
     }
 
     // Método para obter a quantidade total de entidades cadastradas

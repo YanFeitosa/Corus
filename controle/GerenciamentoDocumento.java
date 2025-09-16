@@ -3,9 +3,8 @@ package controle;
 import entidade.Documento;
 import infra.DocumentoRepositorio;
 import infra.UsuarioRepositorio;
-import utils.ExcecoesRepositorio;
-
 import java.util.List;
+import utils.ExcecoesRepositorio;
 
 public class GerenciamentoDocumento {
     private DocumentoRepositorio documentoRepositorio;
@@ -24,6 +23,14 @@ public class GerenciamentoDocumento {
         
         Documento documento = new Documento(nome, tamanho, usuarioAssociado);
         documentoRepositorio.adicionar(documento);
+    }
+
+    public void removerDocumento(String nome) throws ExcecoesRepositorio {
+        documentoRepositorio.remover(nome);
+    }
+
+    public Documento buscarDocumentoPorNome(String nome) throws ExcecoesRepositorio {
+        return documentoRepositorio.buscarPorNome(nome);
     }
 
     public List<Documento> listarDocumentos() throws ExcecoesRepositorio {
