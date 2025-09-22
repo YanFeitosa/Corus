@@ -10,8 +10,8 @@ import utils.ExcecoesRepositorio;
 import utils.ExcecoesSenha;
 
 public class AdminUI {
-     private FacadeSingletonController facade;
-     private Scanner scanner;
+    private FacadeSingletonController facade;
+    private Scanner scanner;
 
     public AdminUI(FacadeSingletonController facade, Scanner scanner) {
         this.facade = facade;
@@ -19,31 +19,59 @@ public class AdminUI {
     }
 
     public void iniciar() {
-         while (true) {
+        while (true) {
             System.out.println("\n===== Menu Principal (Admin) =====");
             System.out.println("1 - Gerenciar usuários");
             System.out.println("2 - Gerenciar documentos");
             System.out.println("3 - Estatísticas do sistema");
-            System.out.println("4 - Logout");
+            System.out.println("4 - Gerar Relatório de Acessos"); // Nova opção
+            System.out.println("0 - Logout"); // Mudei o logout para 0
             System.out.print("Escolha: ");
             String opcao = scanner.nextLine();
 
             switch (opcao) {
                 case "1":
-                    gerenciarUsuarios();
+                    gerenciarUsuarios(); // Chama o método para gerenciar usuários
                     break;
                 case "2":
-                    gerenciarDocumentos();
+                    gerenciarDocumentos(); // Chama o método para gerenciar documentos
                     break;
                 case "3":
-                    mostrarEstatisticas();
+                    mostrarEstatisticas(); // Chama o método para mostrar estatísticas
                     break;
+
                 case "4":
+                    gerarRelatorioAcessos();
+                    break;
+                case "0":
                     System.out.println("Logout realizado com sucesso.");
                     return;
                 default:
                     System.out.println("Opção inválida.");
             }
+        }
+    }
+
+    private void gerarRelatorioAcessos() {
+        System.out.println("\n--- Gerar Relatório de Acessos ---");
+        System.out.println("Escolha o formato:");
+        System.out.println("1 - PDF (formato texto simples)");
+        System.out.println("2 - HTML");
+        System.out.print("Opção: ");
+        String formatoOpcao = scanner.nextLine();
+
+        String formato = "pdf"; // Padrão
+        if ("2".equals(formatoOpcao)) {
+            formato = "html";
+        }
+
+        try {
+            String relatorioGerado = facade.gerarRelatorioDeAcessos(formato);
+            System.out.println("\n--- INICIO DO RELATORIO ---");
+            System.out.println(relatorioGerado);
+            System.out.println("--- FIM DO RELATORIO ---");
+        } catch (ExcecoesRepositorio e) {
+            System.out.println("Erro ao gerar relatório: " + e.getMessage());
         }
     }
 
@@ -141,11 +169,11 @@ public class AdminUI {
                 System.out.println("+------------+--------------------------------+");
                 System.out.println("| Login      | Senha                          |");
                 System.out.println("+------------+--------------------------------+");
-                
+
                 for (Usuario u : usuarios) {
                     System.out.printf("| %-10s | %-30s |%n", u.getLogin(), u.getSenha());
                 }
-                
+
                 System.out.println("+------------+--------------------------------+");
                 System.out.println("Total de usuários: " + usuarios.size());
             }
@@ -156,7 +184,7 @@ public class AdminUI {
 
     private void adicionarDocumento() {
         System.out.println("\n--- Novo Documento ---");
-        
+
         // Listar usuários disponíveis
         try {
             List<Usuario> usuarios = facade.listarUsuarios();
@@ -164,7 +192,7 @@ public class AdminUI {
                 System.out.println("Nenhum usuário cadastrado. É necessário cadastrar um usuário primeiro.");
                 return;
             }
-            
+
             System.out.println("Usuários disponíveis:");
             for (Usuario usuario : usuarios) {
                 System.out.println("- " + usuario.getLogin());
@@ -173,14 +201,14 @@ public class AdminUI {
             System.out.println("Erro ao listar usuários: " + e.getMessage());
             return;
         }
-        
+
         System.out.print("Nome do documento: ");
         String nome = scanner.nextLine();
-        
+
         System.out.print("Tamanho: ");
         int tamanho = scanner.nextInt();
         scanner.nextLine(); // Limpar buffer
-        
+
         System.out.print("Usuário associado: ");
         String usuarioAssociado = scanner.nextLine();
 
@@ -202,12 +230,12 @@ public class AdminUI {
                 System.out.println("+----------------------+-----------+------------------+");
                 System.out.println("| Nome                 | Tamanho   | Usuário          |");
                 System.out.println("+----------------------+-----------+------------------+");
-                
+
                 for (Documento doc : documentos) {
-                    System.out.printf("| %-20s | %-9d | %-16s |%n", 
+                    System.out.printf("| %-20s | %-9d | %-16s |%n",
                             doc.getNome(), doc.getTamanho(), doc.getUsuarioAssociado());
                 }
-                
+
                 System.out.println("+----------------------+-----------+------------------+");
                 System.out.println("Total de documentos: " + documentos.size());
             }
