@@ -59,11 +59,6 @@ public class FacadeSingletonController {
     }
 
     public boolean verificarUsuario(String login, String senha) throws ExcecoesRepositorio {
-        // Verificar se é admin
-        if (login.equals("admin") && senha.equals("admin")) {
-            return true;
-        }
-        
         // Verificar se é um usuário cadastrado
         Usuario usuario = buscarUsuario(login);
         return usuario != null && usuario.getSenha().equals(senha);
