@@ -42,6 +42,7 @@ public class AdminUI {
                 case "3":
                     mostrarEstatisticas(); // Chama o método para mostrar estatísticas
                     break;
+
                 case "4":
                     gerarRelatorioAcessos();
                     break;

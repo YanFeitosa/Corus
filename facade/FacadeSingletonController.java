@@ -30,6 +30,14 @@ public class FacadeSingletonController {
     private MementoCaretaker mementoCaretaker;
 
     // Construtor privado - AGORA SÓ EXISTE UM
+    /*private FacadeSingletonController(RepositorioFactory factory) {
+        // A fachada usa a fábrica para criar os repositórios, sem conhecer as classes
+        // concretas
+        UsuarioRepositorio usuarioRepositorio = factory.createUsuarioRepositorio();
+        DocumentoRepositorio documentoRepositorio = factory.createDocumentoRepositorio();
+    }
+    */
+    // Construtor privado - AGORA SÓ EXISTE UM
     private FacadeSingletonController(RepositorioFactory factory) {
         // A fachada usa a fábrica para criar os repositórios, sem conhecer as classes
         // concretas
@@ -124,10 +132,8 @@ public class FacadeSingletonController {
     // Método para resetar a instância (útil para testes)
     public static synchronized void resetInstance() {
         instance = null;
-    }
-    
+    }    
     // ---- Métodos relacionados ao padrão Memento ----
-    
     /**
      * Salva o estado atual dos usuários.
      * @param descricao descrição do ponto de salvamento
