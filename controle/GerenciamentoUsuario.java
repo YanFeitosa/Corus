@@ -14,14 +14,14 @@ public class GerenciamentoUsuario {
         this.repositorio = repositorio;
     }
 
-    public void adicionarUsuario(String login, String senha) 
+    public void adicionarUsuario(String login, String senha)
             throws ExcecoesRepositorio, ExcecoesLogin, ExcecoesSenha {
-        
+
         // Validações delegadas às classes de exceção
         ExcecoesLogin.validar(login);
         ExcecoesSenha.validar(senha, login);
-        
-        repositorio.adicionar(new Usuario(login, senha));
+
+        repositorio.adicionar(new Usuario(login, senha, 0, null));
     }
 
     public List<Usuario> listarUsuarios() throws ExcecoesRepositorio {
@@ -30,5 +30,14 @@ public class GerenciamentoUsuario {
 
     public Usuario buscarUsuario(String login) throws ExcecoesRepositorio {
         return repositorio.buscar(login);
+    }
+
+    public void atualizarUsuario(Usuario usuario) throws ExcecoesRepositorio {
+        repositorio.atualizar(usuario);
+    }
+
+    public void removerUsuario(String login) throws ExcecoesRepositorio {
+        // Apenas delega a chamada para a camada de persistência
+        repositorio.remover(login);
     }
 }

@@ -39,4 +39,18 @@ public class PersistenciaMemoriaUsu implements UsuarioRepositorio {
     public List<Usuario> listar() {
         return new ArrayList<>(usuarios);
     }
+
+    @Override
+    public void atualizar(Usuario usuario) throws ExcecoesRepositorio {
+        // 1. Remove o usuário antigo da lista, se existir.
+        // O método removeIf retorna true se algum elemento for removido.
+        boolean removido = usuarios.removeIf(u -> u.getLogin().equals(usuario.getLogin()));
+
+        if (!removido) {
+            throw new ExcecoesRepositorio("Usuário não encontrado para atualização");
+        }
+
+        // 2. Adiciona a nova versão do usuário na lista.
+        usuarios.add(usuario);
+    }
 }
