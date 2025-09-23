@@ -1,7 +1,7 @@
 package ui;
 
-import facade.FacadeSingletonController;
 import entidade.Documento;
+import facade.FacadeSingletonController;
 import java.util.List;
 import java.util.Scanner;
 import utils.ExcecoesRepositorio;
@@ -127,8 +127,6 @@ public class UserUI {
             String nomeFinal = novoNome.isEmpty() ? documentoParaEditar.getNome() : novoNome;
             int tamanhoFinal = novoTamanho == 0 ? documentoParaEditar.getTamanho() : novoTamanho;
             
-            // Para simplificar, vamos remover o antigo e adicionar o novo
-            // Em um sistema real, teríamos um método de atualização específico
             fachada.removerDocumento(nomeAntigo);
             fachada.cadastrarDocumento(nomeFinal, tamanhoFinal, usuarioLogado);
             

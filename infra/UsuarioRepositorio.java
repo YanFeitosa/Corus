@@ -6,7 +6,12 @@ import utils.ExcecoesRepositorio;
 
 public interface UsuarioRepositorio {
     void adicionar(Usuario usuario) throws ExcecoesRepositorio;
+
     void remover(String login) throws ExcecoesRepositorio;
+
     Usuario buscar(String login) throws ExcecoesRepositorio;
+
     List<Usuario> listar() throws ExcecoesRepositorio;
+
+    void atualizar(Usuario usuario) throws ExcecoesRepositorio;
 }

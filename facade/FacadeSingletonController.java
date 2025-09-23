@@ -2,9 +2,13 @@ package facade;
 
 import controle.GerenciamentoDocumento;
 import controle.GerenciamentoUsuario;
+import controle.RelatorioHTML;
+import controle.RelatorioPDF;
+import controle.RelatorioTemplate;
 import entidade.Documento;
 import entidade.Usuario;
 import infra.DocumentoRepositorio;
+import infra.RepositorioFactory;
 import infra.UsuarioRepositorio;
 import java.util.List;
 import memento.DocumentoMemento;
@@ -18,47 +22,49 @@ public class FacadeSingletonController {
     // Instância única do Singleton
     private static FacadeSingletonController instance;
 
-    //Controladores
+    // Controladores
     private GerenciamentoUsuario gerenciamentoUsuario;
     private GerenciamentoDocumento gerenciamentoDocumento;
     
     // Memento Caretaker para gerenciar estados salvos
     private MementoCaretaker mementoCaretaker;
 
-    // Construtor privado para impedir instanciação externa
-    private FacadeSingletonController(UsuarioRepositorio usuarioRepositorio, 
-                                     DocumentoRepositorio documentoRepositorio) {
+    // Construtor privado - AGORA SÓ EXISTE UM
+    private FacadeSingletonController(RepositorioFactory factory) {
+        // A fachada usa a fábrica para criar os repositórios, sem conhecer as classes
+        // concretas
+        UsuarioRepositorio usuarioRepositorio = factory.createUsuarioRepositorio();
+        DocumentoRepositorio documentoRepositorio = factory.createDocumentoRepositorio();
+
         this.gerenciamentoUsuario = new GerenciamentoUsuario(usuarioRepositorio);
         this.gerenciamentoDocumento = new GerenciamentoDocumento(documentoRepositorio, usuarioRepositorio);
         this.mementoCaretaker = new MementoCaretaker();
     }
 
-    // Método para obter a instância única (Singleton)
-    public static synchronized FacadeSingletonController getInstance(UsuarioRepositorio usuarioRepositorio, 
-                                                                   DocumentoRepositorio documentoRepositorio) {
+    // Método para obter a instância única (Singleton) - AGORA SÓ EXISTE UM
+    public static synchronized FacadeSingletonController getInstance(RepositorioFactory factory) {
         if (instance == null) {
-            instance = new FacadeSingletonController(usuarioRepositorio, documentoRepositorio);
-        }
-        return instance;
-    }
-    
-    // Método para obter a instância sem parâmetros (após inicialização)
-    public static synchronized FacadeSingletonController getInstance() {
-        if (instance == null) {
-            throw new IllegalStateException("FacadeSingletonController não foi inicializado. "
-                                         + "Use getInstance(UsuarioRepositorio, DocumentoRepositorio) primeiro.");
+            instance = new FacadeSingletonController(factory);
         }
         return instance;
     }
 
     // ---- Métodos relacionados a usuário ----
-    public void cadastrarUsuario(String login, String senha) 
+    public void cadastrarUsuario(String login, String senha)
             throws ExcecoesRepositorio, ExcecoesLogin, ExcecoesSenha {
         gerenciamentoUsuario.adicionarUsuario(login, senha);
     }
 
+    public void removerUsuario(String login) throws ExcecoesRepositorio {
+        gerenciamentoUsuario.removerUsuario(login);
+    }
+
     public List<Usuario> listarUsuarios() throws ExcecoesRepositorio {
         return gerenciamentoUsuario.listarUsuarios();
+    }
+
+    public void atualizarUsuario(Usuario usuario) throws ExcecoesRepositorio {
+        gerenciamentoUsuario.atualizarUsuario(usuario);
     }
 
     public Usuario buscarUsuario(String login) throws ExcecoesRepositorio {
@@ -66,13 +72,12 @@ public class FacadeSingletonController {
     }
 
     public boolean verificarUsuario(String login, String senha) throws ExcecoesRepositorio {
-        // Verificar se é um usuário cadastrado
         Usuario usuario = buscarUsuario(login);
         return usuario != null && usuario.getSenha().equals(senha);
-    }    
-    
+    }
+
     // ---- Métodos relacionados a documentos ----
-    public void cadastrarDocumento(String nome, int tamanho, String usuarioAssociado) 
+    public void cadastrarDocumento(String nome, int tamanho, String usuarioAssociado)
             throws ExcecoesRepositorio {
         gerenciamentoDocumento.adicionarDocumento(nome, tamanho, usuarioAssociado);
     }
@@ -89,24 +94,31 @@ public class FacadeSingletonController {
         return gerenciamentoDocumento.buscarDocumentoPorNome(nome);
     }
 
-    // Método para obter a quantidade total de entidades cadastradas
-    public int getQuantidadeEntidades() throws ExcecoesRepositorio {
-        int quantidadeUsuarios = gerenciamentoUsuario.listarUsuarios().size();
-        int quantidadeDocumentos = gerenciamentoDocumento.listarDocumentos().size();
-        return quantidadeUsuarios + quantidadeDocumentos;
+    // ---- Novos Métodos de Relatório e Estatísticas ----
+
+    public String gerarRelatorioDeAcessos(String formato) throws ExcecoesRepositorio {
+        List<Usuario> usuarios = gerenciamentoUsuario.listarUsuarios();
+        RelatorioTemplate relatorio;
+
+        if ("html".equalsIgnoreCase(formato)) {
+            relatorio = new RelatorioHTML();
+        } else {
+            relatorio = new RelatorioPDF(); // PDF como padrão
+        }
+
+        return relatorio.gerarRelatorio(usuarios);
     }
 
-    // Método para obter estatísticas detalhadas
     public String getEstatisticas() throws ExcecoesRepositorio {
         int quantidadeUsuarios = gerenciamentoUsuario.listarUsuarios().size();
         int quantidadeDocumentos = gerenciamentoDocumento.listarDocumentos().size();
-        
+
         return String.format("Estatísticas do Sistema:%n" +
-                           "- Usuários cadastrados: %d%n" +
-                           "- Documentos cadastrados: %d%n" +
-                           "- Total de entidades: %d", 
-                           quantidadeUsuarios, quantidadeDocumentos, 
-                           quantidadeUsuarios + quantidadeDocumentos);
+                "- Usuários cadastrados: %d%n" +
+                "- Documentos cadastrados: %d%n" +
+                "- Total de entidades: %d",
+                quantidadeUsuarios, quantidadeDocumentos,
+                quantidadeUsuarios + quantidadeDocumentos);
     }
 
     // Método para resetar a instância (útil para testes)

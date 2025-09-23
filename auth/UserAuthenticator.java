@@ -7,6 +7,8 @@ import utils.ExcecoesRepositorio;
 import utils.ExcecoesSenha;
 import java.util.Scanner;
 
+import entidade.Usuario;
+
 public class UserAuthenticator implements Authenticator {
     private final FacadeSingletonController fachada;
     private final Scanner scanner;
@@ -22,9 +24,24 @@ public class UserAuthenticator implements Authenticator {
         // Validar formato das credenciais
         ExcecoesLogin.validar(usuario);
         ExcecoesSenha.validar(senha, usuario);
-        
-        this.usuario = usuario;
-        return fachada.verificarUsuario(usuario, senha);
+
+        // Busca o usuário para verificar a senha E para poder atualizá-lo
+        Usuario usuarioEncontrado = fachada.buscarUsuario(usuario);
+
+        if (usuarioEncontrado != null && usuarioEncontrado.getSenha().equals(senha)) {
+            // LOGIN BEM-SUCEDIDO!
+            // 1. Registra o novo acesso no objeto
+            usuarioEncontrado.registrarAcesso();
+
+            // 2. Manda a Façade persistir a atualização
+            fachada.atualizarUsuario(usuarioEncontrado);
+
+            this.usuario = usuario;
+            return true;
+        }
+
+        // Se o usuário não foi encontrado ou a senha está incorreta
+        return false;
     }
 
     @Override
