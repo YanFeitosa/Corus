@@ -7,6 +7,9 @@ import entidade.Usuario;
 import infra.DocumentoRepositorio;
 import infra.UsuarioRepositorio;
 import java.util.List;
+import memento.DocumentoMemento;
+import memento.MementoCaretaker;
+import memento.UsuarioMemento;
 import utils.ExcecoesLogin;
 import utils.ExcecoesRepositorio;
 import utils.ExcecoesSenha;
@@ -18,12 +21,16 @@ public class FacadeSingletonController {
     //Controladores
     private GerenciamentoUsuario gerenciamentoUsuario;
     private GerenciamentoDocumento gerenciamentoDocumento;
+    
+    // Memento Caretaker para gerenciar estados salvos
+    private MementoCaretaker mementoCaretaker;
 
     // Construtor privado para impedir instanciação externa
     private FacadeSingletonController(UsuarioRepositorio usuarioRepositorio, 
                                      DocumentoRepositorio documentoRepositorio) {
         this.gerenciamentoUsuario = new GerenciamentoUsuario(usuarioRepositorio);
         this.gerenciamentoDocumento = new GerenciamentoDocumento(documentoRepositorio, usuarioRepositorio);
+        this.mementoCaretaker = new MementoCaretaker();
     }
 
     // Método para obter a instância única (Singleton)
@@ -105,5 +112,83 @@ public class FacadeSingletonController {
     // Método para resetar a instância (útil para testes)
     public static synchronized void resetInstance() {
         instance = null;
+    }
+    
+    // ---- Métodos relacionados ao padrão Memento ----
+    
+    /**
+     * Salva o estado atual dos usuários.
+     * @param descricao descrição do ponto de salvamento
+     */
+    public void salvarEstadoUsuarios(String descricao) throws ExcecoesRepositorio {
+        List<Usuario> usuarios = gerenciamentoUsuario.listarUsuarios();
+        UsuarioMemento memento = new UsuarioMemento(usuarios, descricao);
+        mementoCaretaker.salvarMemento(memento);
+    }
+    
+    /**
+     * Salva o estado atual dos documentos.
+     * @param descricao descrição do ponto de salvamento
+     */
+    public void salvarEstadoDocumentos(String descricao) throws ExcecoesRepositorio {
+        List<Documento> documentos = gerenciamentoDocumento.listarDocumentos();
+        DocumentoMemento memento = new DocumentoMemento(documentos, descricao);
+        mementoCaretaker.salvarMemento(memento);
+    }
+    
+    /**
+     * Restaura o último estado salvo dos usuários.
+     * @return true se restaurou com sucesso, false se não há estados salvos
+     */
+    public boolean restaurarUltimoEstadoUsuarios() throws ExcecoesRepositorio {
+        if (!mementoCaretaker.temMementos()) {
+            return false;
+        }
+        
+        // Busca o último memento de usuários
+        for (int i = mementoCaretaker.getQuantidadeMementos() - 1; i >= 0; i--) {
+            var memento = mementoCaretaker.getMemento(i);
+            if (memento instanceof UsuarioMemento usuarioMemento) {
+                gerenciamentoUsuario.restaurarEstado(usuarioMemento.getUsuarios());
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Restaura o último estado salvo dos documentos.
+     * @return true se restaurou com sucesso, false se não há estados salvos
+     */
+    public boolean restaurarUltimoEstadoDocumentos() throws ExcecoesRepositorio {
+        if (!mementoCaretaker.temMementos()) {
+            return false;
+        }
+        
+        // Busca o último memento de documentos
+        for (int i = mementoCaretaker.getQuantidadeMementos() - 1; i >= 0; i--) {
+            var memento = mementoCaretaker.getMemento(i);
+            if (memento instanceof DocumentoMemento documentoMemento) {
+                gerenciamentoDocumento.restaurarEstado(documentoMemento.getDocumentos());
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Retorna o histórico de estados salvos.
+     * @return lista com descrições dos mementos
+     */
+    public List<String> getHistoricoMementos() {
+        return mementoCaretaker.getHistorico();
+    }
+    
+    /**
+     * Verifica se há estados salvos para restaurar.
+     * @return true se há mementos disponíveis
+     */
+    public boolean temEstadosSalvos() {
+        return mementoCaretaker.temMementos();
     }
 }

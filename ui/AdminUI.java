@@ -24,7 +24,10 @@ public class AdminUI {
             System.out.println("1 - Gerenciar usuários");
             System.out.println("2 - Gerenciar documentos");
             System.out.println("3 - Estatísticas do sistema");
-            System.out.println("4 - Logout");
+            System.out.println("4 - Salvar estado do sistema");
+            System.out.println("5 - Restaurar último estado");
+            System.out.println("6 - Histórico de estados salvos");
+            System.out.println("0 - Logout");
             System.out.print("Escolha: ");
             String opcao = scanner.nextLine();
 
@@ -39,6 +42,15 @@ public class AdminUI {
                     mostrarEstatisticas();
                     break;
                 case "4":
+                    salvarEstadoSistema();
+                    break;
+                case "5":
+                    restaurarUltimoEstado();
+                    break;
+                case "6":
+                    mostrarHistoricoEstados();
+                    break;
+                case "0":
                     System.out.println("Logout realizado com sucesso.");
                     return;
                 default:
@@ -213,6 +225,70 @@ public class AdminUI {
             }
         } catch (ExcecoesRepositorio e) {
             System.out.println("Erro ao listar documentos: " + e.getMessage());
+        }
+    }
+    
+    // ---- Métodos do padrão Memento ----
+    
+    private void salvarEstadoSistema() {
+        System.out.println("\n--- Salvar Estado do Sistema ---");
+        System.out.print("Descrição do ponto de salvamento: ");
+        String descricao = scanner.nextLine();
+        
+        try {
+            // Salva estado dos usuários e documentos
+            facade.salvarEstadoUsuarios(descricao + " - Usuários");
+            facade.salvarEstadoDocumentos(descricao + " - Documentos");
+            System.out.println("Estado do sistema salvo com sucesso!");
+        } catch (ExcecoesRepositorio e) {
+            System.out.println("Erro ao salvar estado: " + e.getMessage());
+        }
+    }
+    
+    private void restaurarUltimoEstado() {
+        System.out.println("\n--- Restaurar Último Estado ---");
+        
+        if (!facade.temEstadosSalvos()) {
+            System.out.println("Nenhum estado salvo encontrado.");
+            return;
+        }
+        
+        System.out.print("Tem certeza que deseja restaurar? Isso irá sobrescrever os dados atuais (S/N): ");
+        String confirmacao = scanner.nextLine();
+        
+        if (!confirmacao.equalsIgnoreCase("S")) {
+            System.out.println("Operação cancelada.");
+            return;
+        }
+        
+        try {
+            boolean usuariosRestaurados = facade.restaurarUltimoEstadoUsuarios();
+            boolean documentosRestaurados = facade.restaurarUltimoEstadoDocumentos();
+            
+            if (usuariosRestaurados || documentosRestaurados) {
+                System.out.println("Estado restaurado com sucesso!");
+                if (usuariosRestaurados) System.out.println("- Usuários restaurados");
+                if (documentosRestaurados) System.out.println("- Documentos restaurados");
+            } else {
+                System.out.println("Nenhum estado encontrado para restaurar.");
+            }
+        } catch (ExcecoesRepositorio e) {
+            System.out.println("Erro ao restaurar estado: " + e.getMessage());
+        }
+    }
+    
+    private void mostrarHistoricoEstados() {
+        System.out.println("\n--- Histórico de Estados Salvos ---");
+        
+        List<String> historico = facade.getHistoricoMementos();
+        
+        if (historico.isEmpty()) {
+            System.out.println("Nenhum estado salvo encontrado.");
+        } else {
+            System.out.println("Estados salvos (do mais recente para o mais antigo):");
+            for (String estado : historico) {
+                System.out.println(estado);
+            }
         }
     }
 }

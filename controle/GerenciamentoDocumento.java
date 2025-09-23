@@ -36,4 +36,22 @@ public class GerenciamentoDocumento {
     public List<Documento> listarDocumentos() throws ExcecoesRepositorio {
         return documentoRepositorio.listar();
     }
+    
+    /**
+     * Restaura o estado dos documentos para um estado anterior (Padrão Memento).
+     * Remove todos os documentos atuais e adiciona os do estado salvo.
+     * @param documentosSalvos lista de documentos do estado anterior
+     */
+    public void restaurarEstado(List<Documento> documentosSalvos) throws ExcecoesRepositorio {
+        // Remove todos os documentos atuais
+        List<Documento> documentosAtuais = documentoRepositorio.listar();
+        for (Documento d : documentosAtuais) {
+            documentoRepositorio.remover(d.getNome());
+        }
+        
+        // Adiciona os documentos do estado salvo
+        for (Documento d : documentosSalvos) {
+            documentoRepositorio.adicionar(d);
+        }
+    }
 }

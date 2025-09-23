@@ -31,4 +31,22 @@ public class GerenciamentoUsuario {
     public Usuario buscarUsuario(String login) throws ExcecoesRepositorio {
         return repositorio.buscar(login);
     }
+    
+    /**
+     * Restaura o estado dos usuários para um estado anterior (Padrão Memento).
+     * Remove todos os usuários atuais e adiciona os do estado salvo.
+     * @param usuariosSalvos lista de usuários do estado anterior
+     */
+    public void restaurarEstado(List<Usuario> usuariosSalvos) throws ExcecoesRepositorio {
+        // Remove todos os usuários atuais
+        List<Usuario> usuariosAtuais = repositorio.listar();
+        for (Usuario u : usuariosAtuais) {
+            repositorio.remover(u.getLogin());
+        }
+        
+        // Adiciona os usuários do estado salvo
+        for (Usuario u : usuariosSalvos) {
+            repositorio.adicionar(u);
+        }
+    }
 }
