@@ -1,6 +1,7 @@
 package auth;
 
 import facade.FacadeSingletonController;
+import infra.RepositorioFactory; // NOVO IMPORT
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -12,15 +13,19 @@ public class AuthenticationManager {
     private final FacadeSingletonController fachada;
     private final Scanner scanner;
     private final List<Authenticator> authenticators;
+    private final RepositorioFactory factory; // NOVO: Para criar FacadeCommand
 
-    public AuthenticationManager(FacadeSingletonController fachada, Scanner scanner) {
+    // CONSTRUTOR ATUALIZADO: Recebe a factory
+    public AuthenticationManager(FacadeSingletonController fachada, Scanner scanner, RepositorioFactory factory) {
         this.fachada = fachada;
         this.scanner = scanner;
+        this.factory = factory;
         this.authenticators = new ArrayList<>();
         
         // Registrar os adaptadores de autenticação
         authenticators.add(new AdminAuthenticator(fachada, scanner));
-        authenticators.add(new UserAuthenticator(fachada, scanner));
+        // NOVO: Passar a factory para o UserAuthenticator
+        authenticators.add(new UserAuthenticator(fachada, scanner, factory));
     }
 
     // Método para adicionar novos adaptadores (extensibilidade)

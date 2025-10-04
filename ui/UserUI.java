@@ -1,18 +1,18 @@
 package ui;
 
 import entidade.Documento;
-import facade.FacadeSingletonController;
+import facade.FacadeCommand;
 import java.util.List;
 import java.util.Scanner;
 import utils.ExcecoesRepositorio;
 
 public class UserUI {
-    private FacadeSingletonController fachada;
+    private FacadeCommand facade;
     private Scanner scanner;
     private String usuarioLogado;
 
-    public UserUI(FacadeSingletonController fachada, Scanner scanner, String usuarioLogado) {
-        this.fachada = fachada;
+    public UserUI(FacadeCommand facade, Scanner scanner, String usuarioLogado) {
+        this.facade = facade;
         this.scanner = scanner;
         this.usuarioLogado = usuarioLogado;
     }
@@ -24,7 +24,11 @@ public class UserUI {
             System.out.println("2 - Listar meus documentos");
             System.out.println("3 - Editar documento");
             System.out.println("4 - Excluir documento");
-            System.out.println("5 - Logout");
+            System.out.println("5 - Desfazer (Undo)");
+            System.out.println("6 - Refazer (Redo)");
+            System.out.println("7 - Histórico de comandos");
+            System.out.println("8 - Limpar histórico");
+            System.out.println("0 - Logout");
             System.out.print("Escolha: ");
             String opcao = scanner.nextLine();
 
@@ -42,6 +46,18 @@ public class UserUI {
                     excluirDocumento();
                     break;
                 case "5":
+                    desfazer();
+                    break;
+                case "6":
+                    refazer();
+                    break;
+                case "7":
+                    mostrarHistoricoComandos();
+                    break;
+                case "8":
+                    limparHistorico();
+                    break;
+                case "0":
                     System.out.println("Logout realizado com sucesso.");
                     return;
                 default:
@@ -60,7 +76,7 @@ public class UserUI {
         scanner.nextLine(); // Limpar buffer
 
         try {
-            fachada.cadastrarDocumento(nome, tamanho, usuarioLogado);
+            facade.criarDocumentoCommand(nome, tamanho, usuarioLogado);
             System.out.println("Documento criado com sucesso!");
         } catch (ExcecoesRepositorio e) {
             System.out.println("Erro ao criar documento: " + e.getMessage());
@@ -69,7 +85,7 @@ public class UserUI {
 
     private void listarMeusDocumentos() {
         try {
-            List<Documento> documentos = fachada.listarDocumentos();
+            List<Documento> documentos = facade.listarDocumentos();
             List<Documento> meusDocumentos = documentos.stream()
                     .filter(d -> d.getUsuarioAssociado().equals(usuarioLogado))
                     .toList();
@@ -102,18 +118,15 @@ public class UserUI {
         
         try {
             // Verificar se o documento existe e pertence ao usuário
-            List<Documento> documentos = fachada.listarDocumentos();
-            Documento documentoParaEditar = null;
-            
-            for (Documento doc : documentos) {
-                if (doc.getNome().equals(nomeAntigo) && doc.getUsuarioAssociado().equals(usuarioLogado)) {
-                    documentoParaEditar = doc;
-                    break;
-                }
-            }
+            Documento documentoParaEditar = facade.buscarDocumentoPorNome(nomeAntigo);
             
             if (documentoParaEditar == null) {
-                System.out.println("Documento não encontrado ou você não tem permissão para editá-lo.");
+                System.out.println("Documento não encontrado.");
+                return;
+            }
+            
+            if (!documentoParaEditar.getUsuarioAssociado().equals(usuarioLogado)) {
+                System.out.println("Você não tem permissão para editar este documento.");
                 return;
             }
             
@@ -127,8 +140,7 @@ public class UserUI {
             String nomeFinal = novoNome.isEmpty() ? documentoParaEditar.getNome() : novoNome;
             int tamanhoFinal = novoTamanho == 0 ? documentoParaEditar.getTamanho() : novoTamanho;
             
-            fachada.removerDocumento(nomeAntigo);
-            fachada.cadastrarDocumento(nomeFinal, tamanhoFinal, usuarioLogado);
+            facade.editarDocumentoCommand(nomeAntigo, nomeFinal, tamanhoFinal, usuarioLogado);
             
             System.out.println("Documento editado com sucesso!");
         } catch (Exception e) {
@@ -136,14 +148,14 @@ public class UserUI {
         }
     }
 
- private void excluirDocumento() {
+    private void excluirDocumento() {
         System.out.println("\n--- Excluir Documento ---");
         System.out.print("Nome do documento a excluir: ");
         String nome = scanner.nextLine();
         
         try {
             // Verificar se o documento existe e pertence ao usuário
-            Documento documento = fachada.buscarDocumentoPorNome(nome);
+            Documento documento = facade.buscarDocumentoPorNome(nome);
             
             if (documento == null) {
                 System.out.println("Documento não encontrado.");
@@ -159,13 +171,63 @@ public class UserUI {
             String confirmacao = scanner.nextLine();
             
             if (confirmacao.equalsIgnoreCase("S")) {
-                fachada.removerDocumento(nome);
+                facade.excluirDocumentoCommand(nome);
                 System.out.println("Documento excluído com sucesso!");
             } else {
                 System.out.println("Operação cancelada.");
             }
         } catch (ExcecoesRepositorio e) {
             System.out.println("Erro ao excluir documento: " + e.getMessage());
+        }
+    }
+
+    private void desfazer() {
+        try {
+            if (facade.canUndo()) {
+                facade.undo();
+                System.out.println("Última operação desfeita com sucesso!");
+            } else {
+                System.out.println("Nenhuma operação para desfazer.");
+            }
+        } catch (ExcecoesRepositorio e) {
+            System.out.println("Erro ao desfazer operação: " + e.getMessage());
+        }
+    }
+
+    private void refazer() {
+        try {
+            if (facade.canRedo()) {
+                facade.redo();
+                System.out.println("Operação refeita com sucesso!");
+            } else {
+                System.out.println("Nenhuma operação para refazer.");
+            }
+        } catch (ExcecoesRepositorio e) {
+            System.out.println("Erro ao refazer operação: " + e.getMessage());
+        }
+    }
+
+    private void mostrarHistoricoComandos() {
+        System.out.println("\n--- Histórico de Comandos ---");
+        String historico = facade.getCommandHistory();
+        if (historico.contains("Histórico de Comandos:\n") && 
+            historico.split("\n").length == 1) {
+            System.out.println("Nenhum comando executado ainda.");
+        } else {
+            System.out.println(historico);
+            System.out.println("Total de comandos no histórico: " + facade.getCommandHistorySize());
+        }
+    }
+
+    private void limparHistorico() {
+        System.out.print("Tem certeza que deseja limpar o histórico de comandos? (S/N): ");
+        String confirmacao = scanner.nextLine();
+        
+        if (confirmacao.equalsIgnoreCase("S")) {
+            facade.clearCommandHistory();
+            System.out.println("Histórico de comandos limpo com sucesso!");
+        } else {
+            System.out.println("Operação cancelada.");
         }
     }
 }

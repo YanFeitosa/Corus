@@ -1,5 +1,3 @@
-
-// Arquivo: Main.java (totalmente refatorado)
 import auth.AuthenticationManager;
 import facade.FacadeSingletonController;
 import infra.ArquivoRepositorioFactory;
@@ -11,20 +9,19 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        // 1. O Main agora escolhe qual FÁBRICA usar
+        // Configurar persistência (já retorna a factory)
         RepositorioFactory factory = configurarPersistencia(scanner);
 
-        // 2. A Fábrica é injetada na Façade. A Façade não sabe qual fábrica é.
+        // Inicializar a fachada singleton original
         FacadeSingletonController fachada = FacadeSingletonController.getInstance(factory);
-
-        // 3. O resto do sistema funciona normalmente
-        AuthenticationManager authManager = new AuthenticationManager(fachada, scanner);
+        
+        // NOVO: Passar a factory para o AuthenticationManager
+        AuthenticationManager authManager = new AuthenticationManager(fachada, scanner, factory);
         authManager.iniciarSistema();
 
         scanner.close();
     }
 
-    // esse método agora retorna a FÁBRICA ABSTRATA
     private static RepositorioFactory configurarPersistencia(Scanner scanner) {
         System.out.println("Escolha o tipo de persistência:");
         System.out.println("1 - Memória");

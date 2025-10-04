@@ -1,46 +1,42 @@
 package auth;
 
+import entidade.Usuario;
+import facade.FacadeCommand;
 import facade.FacadeSingletonController;
+import infra.RepositorioFactory;
+import java.util.Scanner;
 import ui.UserUI;
 import utils.ExcecoesLogin;
 import utils.ExcecoesRepositorio;
 import utils.ExcecoesSenha;
-import java.util.Scanner;
-
-import entidade.Usuario;
 
 public class UserAuthenticator implements Authenticator {
     private final FacadeSingletonController fachada;
     private final Scanner scanner;
+    private final RepositorioFactory factory; // NOVO: Para criar FacadeCommand
     private String usuario;
 
-    public UserAuthenticator(FacadeSingletonController fachada, Scanner scanner) {
+    // CONSTRUTOR ATUALIZADO: Recebe a factory
+    public UserAuthenticator(FacadeSingletonController fachada, Scanner scanner, RepositorioFactory factory) {
         this.fachada = fachada;
         this.scanner = scanner;
+        this.factory = factory;
     }
 
     @Override
     public boolean authenticate(String usuario, String senha) throws ExcecoesLogin, ExcecoesSenha, ExcecoesRepositorio {
-        // Validar formato das credenciais
+        // A autenticação continua usando a fachada original
         ExcecoesLogin.validar(usuario);
         ExcecoesSenha.validar(senha, usuario);
 
-        // Busca o usuário para verificar a senha E para poder atualizá-lo
         Usuario usuarioEncontrado = fachada.buscarUsuario(usuario);
 
         if (usuarioEncontrado != null && usuarioEncontrado.getSenha().equals(senha)) {
-            // LOGIN BEM-SUCEDIDO!
-            // 1. Registra o novo acesso no objeto
             usuarioEncontrado.registrarAcesso();
-
-            // 2. Manda a Façade persistir a atualização
             fachada.atualizarUsuario(usuarioEncontrado);
-
             this.usuario = usuario;
             return true;
         }
-
-        // Se o usuário não foi encontrado ou a senha está incorreta
         return false;
     }
 
@@ -52,7 +48,10 @@ public class UserAuthenticator implements Authenticator {
     @Override
     public void redirecionarParaUI() {
         System.out.println("Login realizado com sucesso.");
-        UserUI userUI = new UserUI(fachada, scanner, usuario);
+        
+        // NOVO: Usar FacadeCommand em vez de FacadeSingletonController
+        FacadeCommand facadeCommand = FacadeCommand.getInstance(factory);
+        UserUI userUI = new UserUI(facadeCommand, scanner, usuario);
         userUI.iniciar();
     }
 }

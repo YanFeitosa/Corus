@@ -6,10 +6,12 @@ import controle.RelatorioHTML;
 import controle.RelatorioPDF;
 import controle.RelatorioTemplate;
 import entidade.Documento;
+import entidade.Relatorio;
 import entidade.Usuario;
 import infra.DocumentoRepositorio;
 import infra.RepositorioFactory;
 import infra.UsuarioRepositorio;
+import java.util.ArrayList;
 import java.util.List;
 import memento.DocumentoMemento;
 import memento.MementoCaretaker;
@@ -103,19 +105,39 @@ public class FacadeSingletonController {
     }
 
     // ---- Novos Métodos de Relatório e Estatísticas ----
+    // Adicionar este método na FacadeSingletonController
+    private List<Relatorio> converterUsuariosParaRelatorios(List<Usuario> usuarios) {
+        List<Relatorio> relatorios = new ArrayList<>();
+        
+        for (Usuario usuario : usuarios) {
+            String tipoUsuario = "admin".equals(usuario.getLogin()) ? "Administrador" : "Usuário";
+            Relatorio relatorio = new Relatorio(
+                usuario.getLogin(),
+                usuario.getContagemDeAcessos(),
+                usuario.getUltimoLogin(),
+                tipoUsuario
+            );
+            relatorios.add(relatorio);
+        }
+        
+        return relatorios;
+    }
 
     public String gerarRelatorioDeAcessos(String formato) throws ExcecoesRepositorio {
         List<Usuario> usuarios = gerenciamentoUsuario.listarUsuarios();
+        List<Relatorio> relatorios = converterUsuariosParaRelatorios(usuarios);
+        
         RelatorioTemplate relatorio;
-
+        
         if ("html".equalsIgnoreCase(formato)) {
             relatorio = new RelatorioHTML();
         } else {
             relatorio = new RelatorioPDF(); // PDF como padrão
         }
 
-        return relatorio.gerarRelatorio(usuarios);
+        return relatorio.gerarRelatorio(relatorios);
     }
+    
 
     public String getEstatisticas() throws ExcecoesRepositorio {
         int quantidadeUsuarios = gerenciamentoUsuario.listarUsuarios().size();
