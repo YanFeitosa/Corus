@@ -5,6 +5,9 @@ import infra.MemoriaRepositorioFactory;
 import infra.RepositorioFactory;
 import java.util.Scanner;
 
+import observer.LogObserver;
+import observer.IndexadorObserver;
+
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -15,6 +18,10 @@ public class Main {
         // Inicializar a fachada singleton original
         FacadeSingletonController fachada = FacadeSingletonController.getInstance(factory);
         
+        // --------------- Adiciona observers -----------
+        fachada.addObserver(new LogObserver());
+        fachada.addObserver(new IndexadorObserver());
+
         // Passar a factory para o AuthenticationManager
         AuthenticationManager authManager = new AuthenticationManager(fachada, scanner, factory);
         authManager.iniciarSistema();

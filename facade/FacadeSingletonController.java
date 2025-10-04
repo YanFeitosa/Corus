@@ -20,6 +20,10 @@ import utils.ExcecoesLogin;
 import utils.ExcecoesRepositorio;
 import utils.ExcecoesSenha;
 
+import observer.Observer;
+
+
+
 public class FacadeSingletonController {
     // Instância única do Singleton
     private static FacadeSingletonController instance;
@@ -30,6 +34,10 @@ public class FacadeSingletonController {
     
     // Memento Caretaker para gerenciar estados salvos
     private MementoCaretaker mementoCaretaker;
+
+    // Lista de observadores
+    private List<Observer> observers = new ArrayList<>();
+
 
     // Construtor privado - AGORA SÓ EXISTE UM
     /*private FacadeSingletonController(RepositorioFactory factory) {
@@ -63,10 +71,12 @@ public class FacadeSingletonController {
     public void cadastrarUsuario(String login, String senha)
             throws ExcecoesRepositorio, ExcecoesLogin, ExcecoesSenha {
         gerenciamentoUsuario.adicionarUsuario(login, senha);
+        notifyObservers("Usuário cadastrado: " + login);
     }
 
     public void removerUsuario(String login) throws ExcecoesRepositorio {
         gerenciamentoUsuario.removerUsuario(login);
+        notifyObservers("Usuário removido: " + login);
     }
 
     public List<Usuario> listarUsuarios() throws ExcecoesRepositorio {
@@ -90,10 +100,12 @@ public class FacadeSingletonController {
     public void cadastrarDocumento(String nome, int tamanho, String usuarioAssociado)
             throws ExcecoesRepositorio {
         gerenciamentoDocumento.adicionarDocumento(nome, tamanho, usuarioAssociado);
+        notifyObservers("Documento cadastrado: " + nome + " por usuário: " + usuarioAssociado);
     }
 
     public void removerDocumento(String nome) throws ExcecoesRepositorio {
         gerenciamentoDocumento.removerDocumento(nome);
+        notifyObservers("Documento removido: " + nome);
     }
 
     public List<Documento> listarDocumentos() throws ExcecoesRepositorio {
@@ -231,4 +243,16 @@ public class FacadeSingletonController {
     public boolean temEstadosSalvos() {
         return mementoCaretaker.temMementos();
     }
+
+    // ---- Métodos relacionados ao padrão Observer ----
+    public void addObserver(Observer obs) {
+    observers.add(obs);
+}
+
+    private void notifyObservers(String mensagem) {
+        for (Observer o : observers) {
+            o.update(mensagem);
+        }
+    }
+
 }
