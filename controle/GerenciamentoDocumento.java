@@ -1,6 +1,7 @@
 package controle;
 
 import entidade.Documento;
+import entidade.DocumentoBuilder;
 import infra.DocumentoRepositorio;
 import infra.UsuarioRepositorio;
 import java.util.List;
@@ -20,9 +21,19 @@ public class GerenciamentoDocumento {
         if (usuarioRepositorio.buscar(usuarioAssociado) == null) {
             throw new ExcecoesRepositorio("Usuário não encontrado");
         }
-        
-        Documento documento = new Documento(nome, tamanho, usuarioAssociado);
+        // ------ Construção direta ------
+        // Documento documento = new Documento(nome, tamanho, usuarioAssociado);
+        // documentoRepositorio.adicionar(documento);
+
+        // ------ Construção usando o Builder ------
+        Documento documento = new DocumentoBuilder()
+        .withNome(nome)
+        .withTamanho(tamanho)
+        .withUsuarioAssociado(usuarioAssociado)
+        .build();
+
         documentoRepositorio.adicionar(documento);
+
     }
 
     public void removerDocumento(String nome) throws ExcecoesRepositorio {
