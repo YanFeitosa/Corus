@@ -1,6 +1,6 @@
 package command;
 
-import entidade.Documento;
+//import entidade.Documento;
 import facade.FacadeSingletonController;
 import utils.ExcecoesRepositorio;
 

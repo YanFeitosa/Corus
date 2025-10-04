@@ -1,8 +1,8 @@
 package auth;
 
 import facade.FacadeSingletonController;
-import ui.AdminUI;
 import java.util.Scanner;
+import ui.AdminUI;
 
 public class AdminAuthenticator implements Authenticator {
     private final FacadeSingletonController fachada;

@@ -15,7 +15,7 @@ public class Main {
         // Inicializar a fachada singleton original
         FacadeSingletonController fachada = FacadeSingletonController.getInstance(factory);
         
-        // NOVO: Passar a factory para o AuthenticationManager
+        // Passar a factory para o AuthenticationManager
         AuthenticationManager authManager = new AuthenticationManager(fachada, scanner, factory);
         authManager.iniciarSistema();
 

@@ -13,10 +13,9 @@ import utils.ExcecoesSenha;
 public class UserAuthenticator implements Authenticator {
     private final FacadeSingletonController fachada;
     private final Scanner scanner;
-    private final RepositorioFactory factory; // NOVO: Para criar FacadeCommand
+    private final RepositorioFactory factory;
     private String usuario;
 
-    // CONSTRUTOR ATUALIZADO: Recebe a factory
     public UserAuthenticator(FacadeSingletonController fachada, Scanner scanner, RepositorioFactory factory) {
         this.fachada = fachada;
         this.scanner = scanner;
@@ -49,7 +48,7 @@ public class UserAuthenticator implements Authenticator {
     public void redirecionarParaUI() {
         System.out.println("Login realizado com sucesso.");
         
-        // NOVO: Usar FacadeCommand em vez de FacadeSingletonController
+        //Usar FacadeCommand em vez de FacadeSingletonController
         FacadeCommand facadeCommand = FacadeCommand.getInstance(factory);
         UserUI userUI = new UserUI(facadeCommand, scanner, usuario);
         userUI.iniciar();
