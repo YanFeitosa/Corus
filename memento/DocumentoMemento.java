@@ -1,6 +1,8 @@
 package memento;
 
 import entidade.Documento;
+import entidade.DocumentoBuilder;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +19,16 @@ public class DocumentoMemento implements Memento {
         // Cria uma cópia dos documentos para não interferir no original
         this.documentos = new ArrayList<>();
         for (Documento d : documentos) {
-            this.documentos.add(new Documento(d.getNome(), d.getTamanho(), d.getUsuarioAssociado()));
+
+            //-------Construção direta-------
+            // this.documentos.add(new Documento(d.getNome(), d.getTamanho(), d.getUsuarioAssociado()));
+            //-------Construção usando o Builder-------
+            this.documentos.add(new DocumentoBuilder()
+            .withNome(d.getNome())
+            .withTamanho(d.getTamanho())
+            .withUsuarioAssociado(d.getUsuarioAssociado())
+            .build());
+
         }
         this.description = description;
         this.timestamp = System.currentTimeMillis();
@@ -30,7 +41,16 @@ public class DocumentoMemento implements Memento {
     public List<Documento> getDocumentos() {
         List<Documento> copia = new ArrayList<>();
         for (Documento d : documentos) {
-            copia.add(new Documento(d.getNome(), d.getTamanho(), d.getUsuarioAssociado()));
+            
+            //-------Construção direta-------
+            // copia.add(new Documento(d.getNome(), d.getTamanho(), d.getUsuarioAssociado()));
+            //-------Construção usando o Builder-------
+            copia.add(new DocumentoBuilder()
+            .withNome(d.getNome())
+            .withTamanho(d.getTamanho())
+            .withUsuarioAssociado(d.getUsuarioAssociado())
+            .build());
+
         }
         return copia;
     }
